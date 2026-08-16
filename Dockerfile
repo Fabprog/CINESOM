@@ -63,6 +63,9 @@ COPY --from=assets /app/public/build ./public/build
 # Copia o código da aplicação
 COPY . .
 
+# Configuração do php-fpm (socket unix)
+COPY docker/php-fpm.conf /usr/local/etc/php-fpm.d/zz-app.conf
+
 # Configuração do Nginx
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 
