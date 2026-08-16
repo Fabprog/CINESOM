@@ -1,4 +1,5 @@
 *.log
+/.amazonq/
 /database/database.sqlite
 .DS_Store
 .env
