@@ -4,7 +4,7 @@ services:
     runtime: docker
     dockerfilePath: ./Dockerfile
     region: ohio       # us-east-ohio — mais próximo do Brasil disponível no Render
-    plan: starter      # elimina a hibernação ($7/mês)
+    plan: free         # hiberna após 15min sem uso — ideal para testes
     healthCheckPath: /
     envVars:
       - key: APP_NAME
