@@ -1,0 +1,84 @@
+services:
+  - type: web
+    name: soundreel
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    region: ohio       # us-east-ohio — mais próximo do Brasil disponível no Render
+    plan: starter      # elimina a hibernação ($7/mês)
+    healthCheckPath: /
+    envVars:
+      - key: APP_NAME
+        value: SoundReel
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        fromService:
+          type: web
+          name: soundreel
+          property: host
+          format: https://{host}
+
+      # Banco de dados — preenchido automaticamente pelo Render via fromDatabase
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: soundreel-db
+          property: connectionString
+
+      # Sessão e cache usando o banco PostgreSQL
+      - key: SESSION_DRIVER
+        value: database
+      - key: SESSION_LIFETIME
+        value: "120"
+      - key: SESSION_ENCRYPT
+        value: "true"
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: SESSION_SAME_SITE
+        value: strict
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+
+      # Gerada automaticamente pelo Render
+      - key: APP_KEY
+        generateValue: true
+
+      # Proxies confiáveis (necessário atrás do load balancer do Render)
+      - key: TRUSTED_PROXIES
+        value: "*"
+
+      # Logs
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: error
+
+      # Segredos — preencher manualmente no dashboard do Render
+      - key: SPOTIFY_CLIENT_ID
+        sync: false
+      - key: SPOTIFY_CLIENT_SECRET
+        sync: false
+      - key: TMDB_TOKEN
+        sync: false
+      - key: RAPIDAPI_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_MAILER
+        value: resend
+      - key: MAIL_FROM_ADDRESS
+        sync: false
+      - key: MAIL_FROM_NAME
+        value: SoundReel
+
+databases:
+  - name: soundreel-db
+    databaseName: soundreel
+    user: soundreel
+    region: ohio
+    plan: free          # PostgreSQL free (90 dias) — trocar para "starter" em produção real
